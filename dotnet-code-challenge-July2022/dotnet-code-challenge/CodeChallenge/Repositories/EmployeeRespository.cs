@@ -29,11 +29,7 @@ namespace CodeChallenge.Repositories
 
         public Employee GetById(string id)
         {
-
-            var ems = _employeeContext.Employees;
-            ems.Load<Employee>();
-            var em = ems.SingleOrDefault(e => e.EmployeeId == id);
-            return em;
+            return _employeeContext.Employees.Include(e => e.DirectReports).SingleOrDefault(e => e.EmployeeId == id);
         }
 
         public Task SaveAsync()
