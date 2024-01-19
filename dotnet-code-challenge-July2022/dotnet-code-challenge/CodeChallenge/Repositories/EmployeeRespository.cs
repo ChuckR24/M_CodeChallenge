@@ -29,7 +29,10 @@ namespace CodeChallenge.Repositories
 
         public Employee GetById(string id)
         {
-            var em = _employeeContext.Employees.SingleOrDefault(e => e.EmployeeId == id);
+
+            var ems = _employeeContext.Employees;
+            ems.Load<Employee>();
+            var em = ems.SingleOrDefault(e => e.EmployeeId == id);
             return em;
         }
 
