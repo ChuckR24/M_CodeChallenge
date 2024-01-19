@@ -38,6 +38,7 @@ namespace CodeChallenge.Controllers
             _logger.LogDebug($"Received employee get request for '{id}'");
 
             var employee = _employeeService.GetById(id);
+            //TODO reduce directReports to just ids
 
             if (employee == null)
                 return NotFound();
@@ -48,14 +49,30 @@ namespace CodeChallenge.Controllers
         [HttpGet("reporting-structure/{id}", Name = "getReportingStructure")]
         public IActionResult getReportingStructure(String id)
         {
-            _logger.LogDebug($"Received employee get request for '{id}'");
+            _logger.LogDebug($"Received employee reporting structure get request for '{id}'");
 
             var employee = _employeeService.GetById(id);
+            var numberOfReports = totalReports(employee); 
 
             if (employee == null)
                 return NotFound();
 
-            return Ok(employee);
+            return Ok(new ReportingStructure(employee, numberOfReports));
+        }
+
+        private int totalReports(Employee employee)
+        {
+            if (employee.DirectReports == null) return 0;
+
+            var total = 0;
+            
+            foreach (Employee e in employee.DirectReports)
+            {
+                total++;
+                total += totalReports(e);
+            }
+
+            return total;
         }
 
         [HttpPut("{id}")]
