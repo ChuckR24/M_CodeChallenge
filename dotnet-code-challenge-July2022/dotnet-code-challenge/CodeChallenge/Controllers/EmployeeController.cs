@@ -57,10 +57,10 @@ namespace CodeChallenge.Controllers
             _logger.LogDebug($"Received reporting structure get request for '{id}'");
 
             var employee = _employeeService.GetById(id);
-            var numberOfReports = EmployeeHelpers.totalReports(employee); 
-
             if (employee == null)
                 return NotFound();
+
+            var numberOfReports = EmployeeHelpers.totalReports(employee);
 
             return Ok(new ReportingStructure(employee, numberOfReports));
         }
