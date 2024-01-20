@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using CodeChallenge.Services;
 using CodeChallenge.Models;
+using System.Text.Json.Nodes;
+using System.Text.Json;
 
 namespace CodeChallenge.Controllers
 {
@@ -38,16 +40,29 @@ namespace CodeChallenge.Controllers
             _logger.LogDebug($"Received employee get request for '{id}'");
 
             var employee = _employeeService.GetById(id);
-            //employee.DirectReports.ForEach(r => r.EmployeeId);
+            //employee.DirectReports = employee.DirectReports.Select(r => new Employee { EmployeeId = r.EmployeeId }).ToList();
+            //employee.DirectReports.ForEach(r => r = new Employee() { EmployeeId = r.EmployeeId });
+
+
 
             if (employee == null)
                 return NotFound();
+            var response = convertDirectReportsToIds(employee);
+            return Ok(response);
+        }
 
-            return Ok(employee);
+        private JsonObject convertDirectReportsToIds(Employee employee)
+        {
+            var employeeIds = employee.DirectReports.Select(r => r.EmployeeId).ToList();
+
+            var obj = JsonObject.Create(JsonSerializer.SerializeToElement(employee));
+            obj.Remove("DirectReports");
+            obj.Add("DirectReports", JsonSerializer.SerializeToNode(employeeIds));
+            return obj;
         }
 
         [HttpGet("reporting-structure/{id}", Name = "getReportingStructure")]
-        public IActionResult getReportingStructure(String id)
+        public IActionResult GetReportingStructure(String id)
         {
             _logger.LogDebug($"Received employee reporting structure get request for '{id}'");
 
