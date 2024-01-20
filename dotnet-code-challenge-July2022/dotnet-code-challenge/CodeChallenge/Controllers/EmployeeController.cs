@@ -38,7 +38,7 @@ namespace CodeChallenge.Controllers
             _logger.LogDebug($"Received employee get request for '{id}'");
 
             var employee = _employeeService.GetById(id);
-            //TODO reduce directReports to just ids
+            //employee.DirectReports.ForEach(r => r.EmployeeId);
 
             if (employee == null)
                 return NotFound();
@@ -64,13 +64,9 @@ namespace CodeChallenge.Controllers
         {
             if (employee.DirectReports == null) return 0;
 
-            var total = 0;
+            var total = employee.DirectReports.Count;
             
-            foreach (Employee e in employee.DirectReports)
-            {
-                total++;
-                total += totalReports(e);
-            }
+            employee.DirectReports.ForEach(e => total += totalReports(e));
 
             return total;
         }
