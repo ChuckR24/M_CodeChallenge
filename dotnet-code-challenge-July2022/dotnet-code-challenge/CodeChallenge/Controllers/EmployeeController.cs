@@ -97,6 +97,10 @@ namespace CodeChallenge.Controllers
         {
             _logger.LogDebug($"Received employee compensation create request for '{compensation.EmployeeId}'");
 
+            var employee = _employeeService.GetById(compensation.EmployeeId);
+            if (employee == null)
+                return NotFound();
+
             var existingCompensation = _compensationService.GetById(compensation.EmployeeId);
             if (existingCompensation != null)
                 return Conflict();
