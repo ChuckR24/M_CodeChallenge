@@ -8,6 +8,7 @@ using CodeChallenge.Services;
 using CodeChallenge.Models;
 using System.Text.Json.Nodes;
 using System.Text.Json;
+using CodeChallenge.Helpers;
 
 namespace CodeChallenge.Controllers
 {
@@ -40,25 +41,12 @@ namespace CodeChallenge.Controllers
             _logger.LogDebug($"Received employee get request for '{id}'");
 
             var employee = _employeeService.GetById(id);
-            //employee.DirectReports = employee.DirectReports.Select(r => new Employee { EmployeeId = r.EmployeeId }).ToList();
-            //employee.DirectReports.ForEach(r => r = new Employee() { EmployeeId = r.EmployeeId });
-
-
 
             if (employee == null)
                 return NotFound();
-            var response = convertDirectReportsToIds(employee);
+
+            var response = EmployeeHelpers.convertToJsonWithDirectReportIds(employee);
             return Ok(response);
-        }
-
-        private JsonObject convertDirectReportsToIds(Employee employee)
-        {
-            var employeeIds = employee.DirectReports.Select(r => r.EmployeeId).ToList();
-
-            var obj = JsonObject.Create(JsonSerializer.SerializeToElement(employee));
-            obj.Remove("DirectReports");
-            obj.Add("DirectReports", JsonSerializer.SerializeToNode(employeeIds));
-            return obj;
         }
 
         [HttpGet("reporting-structure/{id}", Name = "getReportingStructure")]
@@ -67,23 +55,12 @@ namespace CodeChallenge.Controllers
             _logger.LogDebug($"Received employee reporting structure get request for '{id}'");
 
             var employee = _employeeService.GetById(id);
-            var numberOfReports = totalReports(employee); 
+            var numberOfReports = EmployeeHelpers.totalReports(employee); 
 
             if (employee == null)
                 return NotFound();
 
             return Ok(new ReportingStructure(employee, numberOfReports));
-        }
-
-        private int totalReports(Employee employee)
-        {
-            if (employee.DirectReports == null) return 0;
-
-            var total = employee.DirectReports.Count;
-            
-            employee.DirectReports.ForEach(e => total += totalReports(e));
-
-            return total;
         }
 
         [HttpPut("{id}")]
