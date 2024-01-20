@@ -97,12 +97,11 @@ namespace CodeChallenge.Controllers
         {
             _logger.LogDebug($"Received employee compensation create request for '{compensation.EmployeeId}'");
 
-            //check if compensation for this employee already exists
-            if (_compensationService.GetById(compensation.EmployeeId) != null)
+            var existingCompensation = _compensationService.GetById(compensation.EmployeeId);
+            if (existingCompensation != null)
                 return Conflict();
 
             _compensationService.Create(compensation);
-            
 
             return CreatedAtRoute("getCompensationById", new { id = compensation.EmployeeId }, compensation);
         }
