@@ -29,7 +29,7 @@ namespace CodeChallenge.Repositories
         public Compensation GetById(string id)
         {
             var compensations = _compContext.Compensations;
-            return compensations.SingleOrDefault(c => c.Employee.EmployeeId == id);
+            return compensations.SingleOrDefault(c => c.EmployeeId == id);
         }
 
         public Task SaveAsync()

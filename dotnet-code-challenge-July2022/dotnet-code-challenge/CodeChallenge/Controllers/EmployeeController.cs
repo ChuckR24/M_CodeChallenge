@@ -18,11 +18,13 @@ namespace CodeChallenge.Controllers
     {
         private readonly ILogger _logger;
         private readonly IEmployeeService _employeeService;
+        private readonly ICompensationService _compensationService;
 
-        public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService)
+        public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService, ICompensationService compensationService)
         {
             _logger = logger;
             _employeeService = employeeService;
+            _compensationService = compensationService;
         }
 
         [HttpPost]
@@ -49,10 +51,10 @@ namespace CodeChallenge.Controllers
             return Ok(response);
         }
 
-        [HttpGet("reporting-structure/{id}", Name = "getReportingStructure")]
-        public IActionResult GetReportingStructure(String id)
+        [HttpGet("reporting-structure/{id}")]
+        public IActionResult GetReportingStructureById(String id)
         {
-            _logger.LogDebug($"Received employee reporting structure get request for '{id}'");
+            _logger.LogDebug($"Received reporting structure get request for '{id}'");
 
             var employee = _employeeService.GetById(id);
             var numberOfReports = EmployeeHelpers.totalReports(employee); 
@@ -75,6 +77,34 @@ namespace CodeChallenge.Controllers
             _employeeService.Replace(existingEmployee, newEmployee);
 
             return Ok(newEmployee);
+        }
+
+        [HttpGet("compensation/{id}", Name = "getCompensationById")]
+        public IActionResult GetCompensationById(String id)
+        {
+            _logger.LogDebug($"Received compensation get request for '{id}'");
+
+            var compensation = _compensationService.GetById(id);
+
+            if (compensation == null)
+                return NotFound();
+
+            return Ok(compensation);
+        }
+
+        [HttpPost("compensation")]
+        public IActionResult CreateCompensation([FromBody] Compensation compensation)
+        {
+            _logger.LogDebug($"Received employee compensation create request for '{compensation.EmployeeId}'");
+
+            //check if compensation for this employee already exists
+            if (_compensationService.GetById(compensation.EmployeeId) != null)
+                return Conflict();
+
+            _compensationService.Create(compensation);
+            
+
+            return CreatedAtRoute("getCompensationById", new { id = compensation.EmployeeId }, compensation);
         }
     }
 }

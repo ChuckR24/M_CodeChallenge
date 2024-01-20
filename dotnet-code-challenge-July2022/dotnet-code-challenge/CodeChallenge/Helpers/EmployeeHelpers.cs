@@ -9,15 +9,18 @@ namespace CodeChallenge.Helpers
     {
         public static JsonObject convertToJsonWithDirectReportIds(Employee employee)
         {
-            //get a list of direct report ids
-            var directReportIds = employee.DirectReports.Select(r => r.EmployeeId).ToList();
-
             //convert employee to JSON 
             var employeeJson = JsonObject.Create(JsonSerializer.SerializeToElement(employee));
 
-            //replace DirectReports attribute with list of ids
-            employeeJson.Remove("DirectReports");
-            employeeJson.Add("DirectReports", JsonSerializer.SerializeToNode(directReportIds));
+            if(employee.DirectReports != null)
+            {
+                //get a list of direct report ids
+                var directReportIds = employee.DirectReports.Select(r => r.EmployeeId).ToList();
+
+                //replace DirectReports attribute with list of ids
+                employeeJson.Remove("DirectReports");
+                employeeJson.Add("DirectReports", JsonSerializer.SerializeToNode(directReportIds));
+            }
 
             return employeeJson;
         }
