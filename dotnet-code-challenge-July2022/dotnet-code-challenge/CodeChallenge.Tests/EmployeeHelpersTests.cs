@@ -85,40 +85,6 @@ namespace CodeCodeChallenge.Tests.Integration
         }
 
         [TestMethod]
-        public void convertToJsonWithDirectReportIds_With_Direct_Reports_Returns_Correct_JSON()
-        {
-            //Arrange
-            List<string> expectedDirectReportsIds = new List<string> { "b7839309-3348-463b-a7e3-5de1c168beb3", "03aa1462-ffa9-4978-901b-7c001562cf6f" };
-
-            //Execute
-            var jsonObject = EmployeeHelpers.convertToJsonWithDirectReportIds(_sampleReportingStructure.employee);
-            JsonArray directReports = (JsonArray) jsonObject["DirectReports"];
-
-            //Assert
-            Assert.IsTrue(expectedDirectReportsIds.Contains(directReports[0].ToString()));
-            Assert.IsTrue(expectedDirectReportsIds.Contains(directReports[1].ToString()));
-        }
-
-        [TestMethod]
-        public void convertToJsonWithDirectReportIds_With_Null_Direct_Reports_Returns_Correct_JSON()
-        {
-            //Arrange
-            List<string> expectedDirectReportsIds = new List<string> { "b7839309-3348-463b-a7e3-5de1c168beb3", "03aa1462-ffa9-4978-901b-7c001562cf6f" };
-            List<Employee> initialDirectReports = _sampleReportingStructure.employee.DirectReports;
-            _sampleReportingStructure.employee.DirectReports = null;
-            
-            //Execute
-            var jsonObject = EmployeeHelpers.convertToJsonWithDirectReportIds(_sampleReportingStructure.employee);
-            var directReports = jsonObject["DirectReports"];
-
-            //Assert
-            Assert.IsNull(directReports);
-
-            //Cleanup
-            _sampleReportingStructure.employee.DirectReports = initialDirectReports;
-        }
-
-        [TestMethod]
         public void totalReports_With_Null_Direct_Reports_Returns_Zero()
         {
             //Arrange

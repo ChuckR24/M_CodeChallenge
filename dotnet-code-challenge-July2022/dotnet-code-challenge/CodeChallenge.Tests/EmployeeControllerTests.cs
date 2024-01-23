@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -81,7 +82,7 @@ namespace CodeCodeChallenge.Tests.Integration
         }
 
         [TestMethod]
-        public void GetEmployeeById_Returns_Ok()
+        public void GetEmployeeById_With_DirectReports_Returns_Ok()
         {
             // Arrange
             var employeeId = "16a596ae-edd3-4847-99fe-c4518e82c86f";
@@ -97,6 +98,27 @@ namespace CodeCodeChallenge.Tests.Integration
             var employee = response.DeserializeContent<Employee>();
             Assert.AreEqual(expectedFirstName, employee.FirstName);
             Assert.AreEqual(expectedLastName, employee.LastName);
+            Assert.IsTrue(employee.DirectReports.All(d => d.EmployeeId != null));
+            Assert.IsTrue(employee.DirectReports.All(d => d.FirstName == null));
+        }
+
+        public void GetEmployeeById_With_No_DirectReports_Returns_Ok()
+        {
+            // Arrange
+            var employeeId = "b7839309-3348-463b-a7e3-5de1c168beb3";
+            var expectedFirstName = "Paul";
+            var expectedLastName = "McCartney";
+
+            // Execute
+            var getRequestTask = _httpClient.GetAsync($"api/employee/{employeeId}");
+            var response = getRequestTask.Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            var employee = response.DeserializeContent<Employee>();
+            Assert.AreEqual(expectedFirstName, employee.FirstName);
+            Assert.AreEqual(expectedLastName, employee.LastName);
+            Assert.IsNull(employee.DirectReports);
         }
 
         [TestMethod]
