@@ -52,12 +52,11 @@ namespace CodeChallenge.Controllers
                 //remove every attribute of the directReports other than their ids
                 employee.DirectReports = employee.DirectReports.Select(
                     r => r = new Employee() { EmployeeId = r.EmployeeId}).ToList();
-                
-                /*
-                 * this indicates that the directReports exist, but not all of their data is included in the response
-                 * the id can be used to call this same method and get full employee data for the directReports
-                 * this is done so that the amount of data through this endpoint is limited
-                 * users should use reportingStructure endpoint for full expanded chain of reports
+
+                /* this indicates that the directReports exist, but not all of their data is included in the response
+                * the id can be used to call this same method and get full employee data for the directReports
+                * this is done so that the amount of data through this endpoint is limited
+                * users should use reportingStructure endpoint for full expanded chain of reports
                 */
             }
 

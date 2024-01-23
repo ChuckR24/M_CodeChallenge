@@ -9,6 +9,8 @@ namespace CodeChallenge.Helpers
     {
         public static int totalReports(Employee employee)
         {
+            //recursive function
+            //assumes that employees cannot directly report to more than one other employee
             if (employee.DirectReports == null) return 0;
 
             var total = employee.DirectReports.Count;
